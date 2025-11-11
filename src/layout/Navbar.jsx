@@ -1,12 +1,25 @@
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { auth } from "../../firebase";
+
 const Navbar = () => {
-  return;
-  <>
+  const [authUser, setAuthUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (result) => {
+      setAuthUser(result);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  return (
     <header>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="container">
-          <a className="navbar-brand" href="#">
-            Navbar
-          </a>
+        <div className="container-fluid">
+          <NavLink className="navbar-brand" to="/">
+            Task Manager
+          </NavLink>
           <button
             className="navbar-toggler"
             type="button"
@@ -19,33 +32,58 @@ const Navbar = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#">
+                <NavLink className="nav-link" to="/">
                   Home
-                </a>
+                </NavLink>
               </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">
-                  Link
-                </a>
-              </li>
-              <li className="nav-item">
-                <a
-                  className="nav-link disabled"
-                  href="#"
-                  tabindex="-1"
-                  aria-disabled="true"
-                >
-                  Disabled
-                </a>
-              </li>
+
+              {authUser && (
+                <>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/taskForm">
+                      Add Form
+                    </NavLink>
+                  </li>
+                 
+                </>
+              )}
+             
+              {!authUser && (
+                <>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/signup">
+                      Sign Up
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/signin">
+                      Sign In
+                    </NavLink>
+                  </li>
+                </>
+              )}
             </ul>
+            
+            {authUser && (
+              <div className="d-flex">
+                <span className="navbar-text me-3">
+                  Welcome, {authUser.email}
+                </span>
+                <button 
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={() => auth.signOut()}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </nav>
     </header>
-  </>;
+  );
 };
 
 export default Navbar;

@@ -28,9 +28,7 @@ const TaskList = () => {
       <div className="container my-5 p-2">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1>Food Orders</h1>
-          <NavLink className="btn btn-success" to="/taskAdd">
-            + Add New Order
-          </NavLink>
+         
         </div>
         
         {taskList.length === 0 ? (
